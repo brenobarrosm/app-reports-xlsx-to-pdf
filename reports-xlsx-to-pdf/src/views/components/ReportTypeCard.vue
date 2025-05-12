@@ -4,13 +4,25 @@
       width="250"
       height="250"
       @click="$emit('typeSelected')">
-    <v-row align-content="center" justify="center">
-      <v-col cols="auto" align-self="center">
-        <v-card-title class="text-center">
-          <v-icon class="align-center text-center" size="70">{{icon}}</v-icon>
-        </v-card-title>
-        <v-card-title class="text-center">{{title}}</v-card-title>
-        <v-card-text class="text-justify">{{description}}</v-card-text>
+    <v-row align="center" justify="center" class="mx-4">
+      <v-col cols="auto">
+        <v-row justify="center" class="mt-4 mb-n8">
+          <v-col cols="auto">
+            <v-avatar color="white" size="65">
+              <v-icon class="align-center text-center" size="50" color="#0C1821">{{ icon }}</v-icon>
+            </v-avatar>
+          </v-col>
+        </v-row>
+        <v-row justify="center">
+          <v-col cols="auto">
+            <h2>{{ title }}</h2>
+          </v-col>
+        </v-row>
+        <v-row justify="center" class="text-justify mb-4">
+          <v-col cols="auto">
+            <p>{{ description }}</p>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
 

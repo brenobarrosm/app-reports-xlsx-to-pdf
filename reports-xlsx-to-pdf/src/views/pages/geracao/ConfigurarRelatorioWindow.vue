@@ -10,13 +10,15 @@
 
 
     <v-window v-model="step">
+
+
       <v-window-item :value="1">
         <v-row justify="space-between" class="mb-4">
           <v-col cols="auto">
             <report-type-card
                 icon="mdi-map-marker"
                 title="Regional"
-                description="Gere um relatório a partir de uma região, estado ou município desejado.."
+                description="Gere um relatório completo apenas selecionando um município específico."
                 @type-selected="selectFilterType('REGIONAL')"
             ></report-type-card>
           </v-col>
@@ -24,7 +26,7 @@
             <report-type-card
                 icon="mdi-account-tie"
                 title="Profissional"
-                description="Gere um relatório de um profissional da base de dados apenas informando seu CPF."
+                description="Gere um relatório de um profissional informando seu CPF."
                 @type-selected="selectFilterType('PROFISSIONAL')"
             ></report-type-card>
           </v-col>
@@ -34,56 +36,68 @@
 
       <v-window-item :value="2">
         <v-container v-if="filterSelected.type === 'REGIONAL'">
-          <v-row>
+          <v-row class="mb-n8">
             <v-col cols="auto">
-              <label>Selecione o escopo:</label>
+              <label>Selecione o estado:</label>
             </v-col>
           </v-row>
           <v-row justify="center">
             <v-col cols="auto">
-
-
-              <v-btn-toggle
-                  v-model="filterSelected.scope"
+              <v-select
                   color="#324A5F"
-                  border
-                  divided
-                  rounded="0"
-                  variant="elevated"
-                  group
-                  density="comfortable"
-              >
-                <v-btn value="REGIÃO" width="133">
-                  Regional
-                </v-btn>
+                  width="400"
+                  v-model="estado"
+                  :items="stateOptions"
+                  item-title="name"
+                  item-value="code"
+                  label="Estado"
+                  return-object
+                  persistent-hint
+              />
 
-                <v-btn value="UF" width="133">
-                  Estadual
-                </v-btn>
-
-                <v-btn value="MUNICÍPIO" width="133">
-                  Municipal
-                </v-btn>
-              </v-btn-toggle>
+            </v-col>
+          </v-row>
+          <v-row class="mb-n8">
+            <v-col cols="auto">
+              <label>Selecione o município:</label>
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="auto">
+              <v-combobox
+                  color="#324A5F"
+                  width="400"
+                  v-model="municipio"
+                  :items="filteredCities"
+                  item-title="name"
+                  item-value="id"
+                  label="Município"
+                  :disabled="!estado"
+              ></v-combobox>
             </v-col>
           </v-row>
         </v-container>
-        <v-row v-if="filterSelected.type === 'PROFISSIONAL'">
-          <v-col cols="auto">
-            <label>Digite o CPF:</label>
-          </v-col>
-        </v-row>
-        <v-row justify="center">
-          <v-col cols="auto">
-            <v-text-field
-                :disabled="filterSelected.type === 'REGIONAL' && filterSelected.scope == null"
-                v-model="filterSelected.value"
-                label="Digite aqui..."
-                variant="filled"
-                width="400"
-            ></v-text-field>
-          </v-col>
-        </v-row>
+
+        <v-container v-if="filterSelected.type === 'PROFISSIONAL'">
+          <v-row>
+            <v-col cols="auto">
+              <label>Informe o CPF (apenas dígitos):</label>
+            </v-col>
+          </v-row>
+          <v-row justify="center">
+            <v-col cols="auto">
+              <v-text-field
+                  color="#324A5F"
+                  width="400"
+                  v-model="cpf"
+                  label="CPF"
+                  maxlength="11"
+                  placeholder="Digite o CPF"
+                  @input="onCpfInput"
+              />
+            </v-col>
+          </v-row>
+        </v-container>
       </v-window-item>
     </v-window>
 
@@ -106,11 +120,11 @@
       </v-btn>
       <v-spacer></v-spacer>
       <v-btn
-          :disabled="createButtonDisabled"
+          :disabled="createReportButtonDisabled"
           v-if="step === 2"
           color="#1B2A41"
           variant="flat"
-          @click="$emit('createReport', filterSelected)"
+          @click="createReport"
       >
         Gerar relatório
       </v-btn>
@@ -119,37 +133,70 @@
 </template>
 
 <script setup>
-import {computed, ref} from "vue";
+import {ref, computed, watch} from 'vue'
+import brasil from '@/assets/brasil.json'
 import ReportTypeCard from "@/views/components/ReportTypeCard.vue";
 
-defineEmits(['cancel', 'createReport'])
+const emit = defineEmits(['cancel', 'createReport'])
 
+const cpf = ref('')
+const estado = ref(null)
+const municipio = ref(null)
 const step = ref(1)
-const createButtonDisabled = computed(() => {
-  return filterSelected.value.type == null
-      || filterSelected.value.scope == null
-      || filterSelected.value.value == null
-      || filterSelected.value.value === ''
+
+const states = brasil.states
+const cities = brasil.cities
+
+watch(estado, (newEstado) => {
+  if (newEstado !== estado) {
+    municipio.value = null
+  }
+})
+
+const stateOptions = Object.entries(states).map(([id, name]) => ({id: Number(id), name}))
+const filteredCities = computed(() => {
+  if (!estado.value) return []
+  return cities.filter(city => city.state_id === estado.value.id)
+})
+
+const createReportButtonDisabled = computed(() => {
+  if (filterSelected.value.type === "REGIONAL") {
+    return estado.value == null || municipio.value == null
+  } else {
+    return cpf.value.length < 11
+  }
 })
 
 const filterSelected = ref({
   type: null,
-  scope: null,
   value: null
 })
 
 function selectFilterType(filterType) {
   filterSelected.value.type = filterType
-  if (filterType === 'PROFISSIONAL') {
-    filterSelected.value.scope = 'PROFISSIONAL'
-  }
   step.value = 2
 }
 
 function backToFilterType() {
   filterSelected.value.value = null
-  filterSelected.value.scope = null
   filterSelected.value.type = null
+  estado.value = null
+  municipio.value = null
   step.value = 1
 }
+
+function onCpfInput() {
+  cpf.value = cpf.value.replace(/\D/g, '').slice(0, 11)
+}
+
+function createReport() {
+  console.log(estado.value)
+  if (filterSelected.value.type === 'REGIONAL') {
+    filterSelected.value.value = `${estado.value.name}|${municipio.value.name}`
+  } else {
+    filterSelected.value.value = cpf.value
+  }
+  emit('createReport', filterSelected.value)
+}
+
 </script>
