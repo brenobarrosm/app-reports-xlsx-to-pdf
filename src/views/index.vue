@@ -18,7 +18,7 @@
         ></gerando-relatorio>
         <visualizar-relatorio
             v-else
-            @new-report="fileSelected = null; pdfFileUrl = null"
+            @new-report="pdfFileUrl = null"
             :file-url="pdfFileUrl"
         ></visualizar-relatorio>
       </v-container>

@@ -24,10 +24,11 @@
         <v-col cols="auto">
           <v-btn
               text="USAR ARQUIVO DO ONEDRIVE"
-              @click="showOneDriveDialog = true"
+              @click="getFileFromOneDrive"
               color="#1B2A41"
               height="80"
               width="500"
+              :loading="loading"
               rounded
               class="text-lg-h5 text-uppercase font-weight-regular"
           >
@@ -39,12 +40,14 @@
       </v-row>
       <v-row justify="center" class="mt-n4 mb-n6">
         <v-col cols="auto">
-          <p>ou</p>
+          <p v-if="!loading">ou</p>
+          <p v-else>Aguarde enquanto seu arquivo é processado...</p>
         </v-col>
       </v-row>
       <v-row justify="center">
         <v-col cols="auto">
           <v-btn
+              v-show="!loading"
               text="IMPORTE DO COMPUTADOR"
               @click="showUploadFileDialog = true"
               prepend-icon="mdi-monitor"
@@ -58,11 +61,6 @@
       </v-row>
     </v-col>
   </v-row>
-  <link-one-drive
-      :show-dialog="showOneDriveDialog"
-      @close="showOneDriveDialog = false"
-      @upload-file="handleUploadFile"
-  ></link-one-drive>
   <upload-file
       :show-dialog="showUploadFileDialog"
       @close="showUploadFileDialog = false"
@@ -72,15 +70,21 @@
 <script setup>
 import {ref} from "vue";
 import UploadFile from "@/views/pages/geracao/UploadFile.vue";
-import LinkOneDrive from "@/views/pages/geracao/LinkOneDrive.vue";
+import files from '@/api/files'
 
 const emit = defineEmits(['fileSelected'])
-const showOneDriveDialog = ref(false)
+const loading = ref(false)
 const showUploadFileDialog = ref(false);
 
 function handleUploadFile(file) {
   showUploadFileDialog.value = false;
-  showOneDriveDialog.value = false;
   emit('fileSelected', file);
+}
+
+async function getFileFromOneDrive() {
+  loading.value = true
+  const file = await files.getFIleFromOneDrive()
+  emit('fileSelected', file)
+  loading.value = false
 }
 </script>
