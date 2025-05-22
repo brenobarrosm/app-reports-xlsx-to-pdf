@@ -30,10 +30,10 @@
               width="500"
               :loading="loading"
               rounded
-              class="text-lg-h5 text-uppercase font-weight-regular"
+              class="text-lg-h5 text-uppercase font-weight-regular hover-float-btn"
           >
             <template #prepend>
-              <v-icon size="36" class="mr-2">mdi-cloud</v-icon>
+              <v-icon size="36" class="mr-2 cloud-icon">mdi-cloud</v-icon>
             </template>
           </v-btn>
         </v-col>
@@ -41,7 +41,7 @@
       <v-row justify="center" class="mt-n4 mb-n6">
         <v-col cols="auto">
           <p v-if="!loading">ou</p>
-          <p v-else>Aguarde enquanto seu arquivo é processado...</p>
+          <p v-else>Aguarde enquanto o arquivo do OneDrive é processado...</p>
         </v-col>
       </v-row>
       <v-row justify="center">
@@ -88,3 +88,21 @@ async function getFileFromOneDrive() {
   loading.value = false
 }
 </script>
+
+<style>
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.hover-float-btn:hover .cloud-icon {
+  animation: float 1.5s ease-in-out infinite;
+}
+</style>

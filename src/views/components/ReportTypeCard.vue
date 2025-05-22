@@ -1,31 +1,34 @@
 <template>
   <v-card
-      color="#324A5F"
-      width="250"
-      height="250"
-      @click="$emit('typeSelected')">
+      color="#1B2A41"
+      width="300"
+      height="300"
+      class="align-content-center rounded-lg elevation-10 card-hover"
+      @click="$emit('typeSelected')"
+      rounded
+  >
     <v-row align="center" justify="center" class="mx-4">
       <v-col cols="auto">
-        <v-row justify="center" class="mt-4 mb-n8">
+        <v-row justify="center" class="mb-n10 mt-2">
           <v-col cols="auto">
-            <v-avatar color="white" size="65">
-              <v-icon class="align-center text-center" size="50" color="#0C1821">{{ icon }}</v-icon>
-            </v-avatar>
+            <div class="icon-container">
+              <v-icon class="icon" size="90" color="white">{{ icon }}</v-icon>
+            </div>
           </v-col>
         </v-row>
         <v-row justify="center">
           <v-col cols="auto">
-            <h2>{{ title }}</h2>
+            <h1 class="text">{{ title.toUpperCase() }}</h1>
           </v-col>
         </v-row>
+        <v-divider class="my-4"></v-divider>
         <v-row justify="center" class="text-justify mb-4">
           <v-col cols="auto">
-            <p>{{ description }}</p>
+            <p class="font-weight-thin text-h6 text-center">{{ description }}</p>
           </v-col>
         </v-row>
       </v-col>
     </v-row>
-
   </v-card>
 </template>
 
@@ -33,3 +36,16 @@
 defineEmits(['typeSelected'])
 defineProps(['icon', 'title', 'description'])
 </script>
+
+<style scoped>
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease;
+}
+
+.card-hover:hover .icon-container {
+  transform: translateY(-8px);
+}
+</style>

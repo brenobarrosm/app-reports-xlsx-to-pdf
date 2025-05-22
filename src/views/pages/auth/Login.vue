@@ -24,7 +24,7 @@
               prepend-inner-icon="mdi-email-outline"
               variant="outlined"
               v-model="email"
-              label="Email"
+              placeholder="Email"
               width="400"
               color="#1B2A41"
           ></v-text-field>
@@ -43,7 +43,7 @@
               v-model="password"
               :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
               :type="showPassword ? 'text' : 'password'"
-              label="Senha"
+              placeholder="Senha"
               hide-details
               @click:append-inner="showPassword = !showPassword"
               width="400"

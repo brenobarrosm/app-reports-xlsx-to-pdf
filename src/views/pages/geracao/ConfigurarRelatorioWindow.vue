@@ -1,17 +1,11 @@
 <template>
-  <v-card
-      class="px-4"
-  >
+  <v-card elevation="12" class="px-12 py-4" style="border-radius: 20px; background: white;">
     <v-row class="mb-2">
       <v-col cols="auto">
-        <h2>Gerar novo relatório</h2>
+        <h1 style="color: #1B2A41">Gerar novo relatório</h1>
       </v-col>
     </v-row>
-
-
     <v-window v-model="step">
-
-
       <v-window-item :value="1">
         <v-row justify="space-between" class="mb-4">
           <v-col cols="auto">
@@ -32,11 +26,9 @@
           </v-col>
         </v-row>
       </v-window-item>
-
-
       <v-window-item :value="2">
         <v-container v-if="filterSelected.type === 'REGIONAL'">
-          <v-row class="mb-n8">
+          <v-row class="mb-n6">
             <v-col cols="auto">
               <label>Selecione o estado:</label>
             </v-col>
@@ -45,19 +37,22 @@
             <v-col cols="auto">
               <v-select
                   color="#324A5F"
+                  variant="outlined"
+                  base-color="#324A5F"
+                  prepend-inner-icon="mdi-map-marker"
+                  icon-color="#324A5F"
                   width="400"
                   v-model="estado"
                   :items="stateOptions"
                   item-title="name"
                   item-value="code"
-                  label="Estado"
+                  placeholder="Estado"
                   return-object
                   persistent-hint
               />
-
             </v-col>
           </v-row>
-          <v-row class="mb-n8">
+          <v-row class="mb-n6 mt-n6">
             <v-col cols="auto">
               <label>Selecione o município:</label>
             </v-col>
@@ -65,19 +60,22 @@
           <v-row justify="center">
             <v-col cols="auto">
               <v-combobox
+                  prepend-inner-icon="mdi-home-city"
+                  base-color="#324A5F"
+                  icon-color="#324A5F"
                   color="#324A5F"
+                  variant="outlined"
                   width="400"
                   v-model="municipio"
                   :items="filteredCities"
                   item-title="name"
                   item-value="id"
-                  label="Município"
+                  placeholder="Município"
                   :disabled="!estado"
               ></v-combobox>
             </v-col>
           </v-row>
         </v-container>
-
         <v-container v-if="filterSelected.type === 'PROFISSIONAL'">
           <v-row>
             <v-col cols="auto">
@@ -88,11 +86,15 @@
             <v-col cols="auto">
               <v-text-field
                   color="#324A5F"
+                  prepend-inner-icon="mdi-account-search"
+                  icon-color="#324A5F"
                   width="400"
                   v-model="cpf"
-                  label="CPF"
+                  placeholder="CPF"
+                  counter
                   maxlength="11"
-                  placeholder="Digite o CPF"
+                  variant="outlined"
+                  base-color="#324A5F"
                   @input="onCpfInput"
               />
             </v-col>
@@ -100,9 +102,7 @@
         </v-container>
       </v-window-item>
     </v-window>
-
     <v-divider></v-divider>
-
     <v-card-actions>
       <v-btn
           v-if="step === 1"
@@ -124,7 +124,10 @@
           v-if="step === 2"
           color="#1B2A41"
           variant="flat"
+          height="45"
+          class="px-6 py-4"
           @click="createReport"
+          rounded
       >
         Gerar relatório
       </v-btn>
@@ -153,7 +156,9 @@ watch(estado, (newEstado) => {
   }
 })
 
-const stateOptions = Object.entries(states).map(([id, name]) => ({id: Number(id), name}))
+const stateOptions = Object.entries(states)
+    .map(([id, name]) => ({ id: Number(id), name }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 const filteredCities = computed(() => {
   if (!estado.value) return []
   return cities.filter(city => city.state_id === estado.value.id)
@@ -190,7 +195,6 @@ function onCpfInput() {
 }
 
 function createReport() {
-  console.log(estado.value)
   if (filterSelected.value.type === 'REGIONAL') {
     filterSelected.value.value = `${estado.value.name}|${municipio.value.name}`
   } else {
