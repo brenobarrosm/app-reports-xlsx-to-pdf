@@ -4,7 +4,7 @@
         variant="text"
         append-icon="mdi-logout"
         color="error"
-        class="mb-n12"
+        class="mb-n16"
         @click="logout"
     >
       Sair

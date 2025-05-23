@@ -1,6 +1,10 @@
 import axios from 'axios'
 
 class ReportsApiClient {
+
+    constructor() {
+        this.baseUrl = process.env.VUE_APP_API_BASE_URL.replace(/\/$/, '')
+    }
     getAuthHeaders() {
         const token = sessionStorage.getItem('token')
         return {
@@ -15,7 +19,7 @@ class ReportsApiClient {
         formData.append('value', filters.value)
         try {
             const { data: response }  = await axios.post(
-                'http://localhost:8000/api/reports/info',
+                this.baseUrl + '/api/reports/info',
                 formData,
                 {
                     headers: {
@@ -33,7 +37,7 @@ class ReportsApiClient {
     async getReportPdf(reportInfoInDTO) {
         try {
             const { data: response } = await axios.post(
-                'http://localhost:8000/api/reports/pdf',
+                this.baseUrl + '/api/reports/pdf',
                 reportInfoInDTO,
                 {
                     responseType: 'blob',
