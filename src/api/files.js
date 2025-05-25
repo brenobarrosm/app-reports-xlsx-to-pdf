@@ -1,9 +1,13 @@
 import axios from 'axios'
 
 class FilesApiClient {
+    constructor() {
+        this.baseUrl = process.env.VUE_APP_N8N_BASE_URL.replace(/\/$/, '')
+    }
+
     async getFIleFromOneDrive() {
         const {data: response} = await axios.get(
-            'https://n8n.inbrix.tech/webhook/report/onedrive',
+            this.baseUrl + '/webhook/report/onedrive',
             {
                 responseType: 'blob',
                 headers: {
